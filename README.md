@@ -1,4 +1,4 @@
-Game-Project1
+Last Light
 =============
 
 Description
@@ -8,11 +8,12 @@ Description
 
 Credit
 =============
+Developer Team
 
-Rusty
+Rusty - Lead Designer
 
-West2554
+West2554 - World Creator
 
-Darkzerox
+Darkzerox - .....
 
 -------------
