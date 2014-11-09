@@ -106,7 +106,7 @@ uniform float4 _HorizonColor;
 #endif
 sampler2D _BumpMap;
 
-half4 frag( v2f i ) : SV_Target
+half4 frag( v2f i ) : COLOR
 {
 	i.viewDir = normalize(i.viewDir);
 	
@@ -133,7 +133,7 @@ half4 frag( v2f i ) : SV_Target
 	half4 color;
 	
 	#if defined(WATER_REFRACTIVE)
-	half fresnel = UNITY_SAMPLE_1CHANNEL( _Fresnel, float2(fresnelFac,fresnelFac) );
+	half fresnel = tex2D( _Fresnel, float2(fresnelFac,fresnelFac) ).a;
 	color = lerp( refr, refl, fresnel );
 	#endif
 	

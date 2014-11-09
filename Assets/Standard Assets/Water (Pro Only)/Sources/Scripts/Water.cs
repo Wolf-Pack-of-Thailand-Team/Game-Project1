@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+
 
 [ExecuteInEditMode] // Make water live-update even when not in play mode
 public class Water : MonoBehaviour
@@ -17,9 +17,9 @@ public class Water : MonoBehaviour
 	
 	public LayerMask m_ReflectLayers = -1;
 	public LayerMask m_RefractLayers = -1;
-
-	private Dictionary<Camera, Camera> m_ReflectionCameras = new Dictionary<Camera, Camera>(); // Camera -> Camera table
-	private Dictionary<Camera, Camera> m_RefractionCameras = new Dictionary<Camera, Camera>(); // Camera -> Camera table
+		
+	private Hashtable m_ReflectionCameras = new Hashtable(); // Camera -> Camera table
+	private Hashtable m_RefractionCameras = new Hashtable(); // Camera -> Camera table
 	
 	private RenderTexture m_ReflectionTexture = null;
 	private RenderTexture m_RefractionTexture = null;
@@ -84,7 +84,9 @@ public class Water : MonoBehaviour
 			// Setup oblique projection matrix so that near plane is our reflection
 			// plane. This way we clip everything below/above it for free.
 			Vector4 clipPlane = CameraSpacePlane( reflectionCamera, pos, normal, 1.0f );
-			reflectionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
+			Matrix4x4 projection = cam.projectionMatrix;
+			CalculateObliqueMatrix (ref projection, clipPlane);
+			reflectionCamera.projectionMatrix = projection;
 			
 			reflectionCamera.cullingMask = ~(1<<4) & m_ReflectLayers.value; // never render water layer
 			reflectionCamera.targetTexture = m_ReflectionTexture;
@@ -106,7 +108,9 @@ public class Water : MonoBehaviour
 			// Setup oblique projection matrix so that near plane is our reflection
 			// plane. This way we clip everything below/above it for free.
 			Vector4 clipPlane = CameraSpacePlane( refractionCamera, pos, normal, -1.0f );
-			refractionCamera.projectionMatrix = cam.CalculateObliqueMatrix(clipPlane);
+			Matrix4x4 projection = cam.projectionMatrix;
+			CalculateObliqueMatrix (ref projection, clipPlane);
+			refractionCamera.projectionMatrix = projection;
 			
 			refractionCamera.cullingMask = ~(1<<4) & m_RefractLayers.value; // never render water layer
 			refractionCamera.targetTexture = m_RefractionTexture;
@@ -155,11 +159,11 @@ public class Water : MonoBehaviour
 			DestroyImmediate( m_RefractionTexture );
 			m_RefractionTexture = null;
 		}
-		foreach (KeyValuePair<Camera, Camera> kvp in m_ReflectionCameras)
-        	DestroyImmediate( (kvp.Value).gameObject );
+		foreach( DictionaryEntry kvp in m_ReflectionCameras )
+        	DestroyImmediate( ((Camera)kvp.Value).gameObject );
         m_ReflectionCameras.Clear();
-		foreach (KeyValuePair<Camera, Camera> kvp in m_RefractionCameras)
-        	DestroyImmediate( (kvp.Value).gameObject );
+		foreach( DictionaryEntry kvp in m_RefractionCameras )
+        	DestroyImmediate( ((Camera)kvp.Value).gameObject );
         m_RefractionCameras.Clear();
 	}
 	
@@ -255,8 +259,8 @@ public class Water : MonoBehaviour
 			}
 			
 			// Camera for reflection
-			m_ReflectionCameras.TryGetValue(currentCamera, out reflectionCamera);
-			if (!reflectionCamera) // catch both not-in-dictionary and in-dictionary-but-deleted-GO
+			reflectionCamera = m_ReflectionCameras[currentCamera] as Camera;
+			if( !reflectionCamera ) // catch both not-in-dictionary and in-dictionary-but-deleted-GO
 			{
 				GameObject go = new GameObject( "Water Refl Camera id" + GetInstanceID() + " for " + currentCamera.GetInstanceID(), typeof(Camera), typeof(Skybox) );
 				reflectionCamera = go.camera;
@@ -284,8 +288,8 @@ public class Water : MonoBehaviour
 			}
 			
 			// Camera for refraction
-			m_RefractionCameras.TryGetValue(currentCamera, out refractionCamera);
-			if (!refractionCamera) // catch both not-in-dictionary and in-dictionary-but-deleted-GO
+			refractionCamera = m_RefractionCameras[currentCamera] as Camera;
+			if( !refractionCamera ) // catch both not-in-dictionary and in-dictionary-but-deleted-GO
 			{
 				GameObject go = new GameObject( "Water Refr Camera id" + GetInstanceID() + " for " + currentCamera.GetInstanceID(), typeof(Camera), typeof(Skybox) );
 				refractionCamera = go.camera;
@@ -343,6 +347,25 @@ public class Water : MonoBehaviour
 		return new Vector4( cnormal.x, cnormal.y, cnormal.z, -Vector3.Dot(cpos,cnormal) );
 	}
 	
+	// Adjusts the given projection matrix so that near plane is the given clipPlane
+	// clipPlane is given in camera space. See article in Game Programming Gems 5 and
+	// http://aras-p.info/texts/obliqueortho.html
+	private static void CalculateObliqueMatrix (ref Matrix4x4 projection, Vector4 clipPlane)
+	{
+		Vector4 q = projection.inverse * new Vector4(
+			sgn(clipPlane.x),
+			sgn(clipPlane.y),
+			1.0f,
+			1.0f
+		);
+		Vector4 c = clipPlane * (2.0F / (Vector4.Dot (clipPlane, q)));
+		// third row = clip plane - fourth row
+		projection[2] = c.x - projection[3];
+		projection[6] = c.y - projection[7];
+		projection[10] = c.z - projection[11];
+		projection[14] = c.w - projection[15];
+	}
+
 	// Calculates reflection matrix around the given plane
 	private static void CalculateReflectionMatrix (ref Matrix4x4 reflectionMat, Vector4 plane)
 	{

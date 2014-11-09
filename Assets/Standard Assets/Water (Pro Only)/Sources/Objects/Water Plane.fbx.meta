@@ -17,7 +17,7 @@ ModelImporter:
     materialName: 3
     materialSearch: 1
   animations:
-    legacyGenerateAnimations: 0
+    legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
     motionNodeName: 
