@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Gravity : MonoBehaviour {
 	
 	public Transform planet;
@@ -10,4 +12,6 @@ public class Gravity : MonoBehaviour {
 		Vector3 direction = planet.position - transform.position;
 		rigidbody.AddForce(direction.normalized * gravity);
 	}
+}
+
 }

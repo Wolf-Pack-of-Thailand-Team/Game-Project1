@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System;
+using System.IO;
+
+namespace Planetary {
 
 [CustomEditor(typeof(Planet))]
 public class PlanetEditor : Editor
@@ -9,10 +12,10 @@ public class PlanetEditor : Editor
 	private Planet planet;
 
 	public enum Tab {
-		GENERATION, LOD, PAINTING
+		GENERATION, LOD, PAINTING, SHADER
 	}
 	private Tab currentTab = Tab.GENERATION;
-	private string[] tabTexts = new string[3] {"GENERATE", "LOD", "PAINT"};
+	private string[] tabTexts = new string[4] {"GENERATE", "LOD", "PAINT", "SHADER"};
 	private string[] brushTexts = new string[3] {"ADD", "SUBSTRACT", "SET"};
 
 	private bool showColliderTab = false;
@@ -39,7 +42,7 @@ public class PlanetEditor : Editor
 	#endregion
 
 	SerializedProperty terrainAsset, frequencyScale, radius, heightVariation, meshResolution, subdivisions;
-	SerializedProperty generateOnStart, randomizeSeeds, seed;
+	SerializedProperty generateOnStart, randomizeSeeds, seed, createBorders, logGenerationTimes, showDebug;
 	//SerializedProperty useLod, maxLodLevel, lodDistances;
 	SerializedProperty lodTarget, simultaneousSubdivisions, useAngleCulling, rendererCullingAngle, lodUpdateInterval;
 	//SerializedProperty generateColliders;
@@ -47,6 +50,7 @@ public class PlanetEditor : Editor
 	void OnEnable() {
 		// the planet being edited
 		planet = (Planet)target;
+		planet.LoadModule();
 
 		terrainAsset = serializedObject.FindProperty("terrainAsset");
 		frequencyScale = serializedObject.FindProperty("frequencyScale");
@@ -54,6 +58,10 @@ public class PlanetEditor : Editor
 		heightVariation = serializedObject.FindProperty("heightVariation");
 		meshResolution = serializedObject.FindProperty("meshResolution");
 		subdivisions = serializedObject.FindProperty("subdivisions");
+
+		createBorders = serializedObject.FindProperty("createBorders");
+		logGenerationTimes = serializedObject.FindProperty("logGenerationTimes");
+		showDebug = serializedObject.FindProperty("showDebugInfo");
 
 		generateOnStart = serializedObject.FindProperty("generateOnStart");
 		randomizeSeeds = serializedObject.FindProperty("randomizeSeeds");
@@ -149,7 +157,7 @@ public class PlanetEditor : Editor
 			EditorGUILayout.PrefixLabel("Random seed:");
 			seed.floatValue = EditorGUILayout.FloatField(seed.floatValue);
 			if(GUILayout.Button("Rnd", GUILayout.Width(90f))) {
-				seed.floatValue = (float)UnityEngine.Random.Range(-100000, 100000);
+				seed.floatValue = (float)UnityEngine.Random.Range(-1000f, 1000f);
 			}
 			EditorGUILayout.EndHorizontal();
 			
@@ -165,16 +173,18 @@ public class PlanetEditor : Editor
 			// COLLIDERS
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("Colliders", EditorStyles.boldLabel);
+			EditorGUILayout.HelpBox("Lower level colliders are automatically disabled when a higher level collider is generated.", MessageType.Info);
+			
 			showColliderTab = EditorGUILayout.Foldout(showColliderTab, "Show");
 			if(showColliderTab) {
 				EditorGUILayout.LabelField("Level 0:");
 				planet.generateColliders[0] = EditorGUILayout.Toggle("Generate colliders", planet.generateColliders[0]);
-				planet.disableCollidersOnSubdivision[0] = EditorGUILayout.Toggle("Disable when subdividing", planet.disableCollidersOnSubdivision[0]);
+				//planet.disableCollidersOnSubdivision[0] = EditorGUILayout.Toggle("Disable when subdividing", planet.disableCollidersOnSubdivision[0]);
 				if(planet.useLod) {
 					for(int i = 0; i < planet.lodDistances.Length; i++) {
 						EditorGUILayout.LabelField("Level " + (i+1).ToString() + ":");
 						planet.generateColliders[i+1] = EditorGUILayout.Toggle("Generate colliders", planet.generateColliders[i+1]);
-						planet.disableCollidersOnSubdivision[i+1] = EditorGUILayout.Toggle("Disable when subdividing", planet.disableCollidersOnSubdivision[i+1]);
+						//planet.disableCollidersOnSubdivision[i+1] = EditorGUILayout.Toggle("Disable when subdividing", planet.disableCollidersOnSubdivision[i+1]);
 					}
 				}
 			}
@@ -233,6 +243,14 @@ public class PlanetEditor : Editor
 				for(int i = 0; i < planet.lodDistances.Length; i++) {
 					planet.lodDistances[i] = EditorGUILayout.FloatField("Level " + (i+1).ToString() + ":", planet.lodDistances[i]);
 				}
+
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Minimum angle (planet-viewer dot planet-surface):");
+				EditorGUILayout.EndHorizontal();
+
+				for(int i = 0; i < planet.lodDots.Length; i++) {
+					planet.lodDots[i] = EditorGUILayout.FloatField("Dot angle " + (i+1).ToString() + ":", planet.lodDots[i]);
+				}
 				
 				EditorGUILayout.Space();
 				EditorGUILayout.BeginHorizontal();
@@ -257,9 +275,16 @@ public class PlanetEditor : Editor
 					rendererCullingAngle.floatValue = EditorGUILayout.FloatField(rendererCullingAngle.floatValue);
 					EditorGUILayout.EndHorizontal();
 				}
+
+				createBorders.boolValue = EditorGUILayout.Toggle("Create surface skirts", createBorders.boolValue);
+				logGenerationTimes.boolValue = EditorGUILayout.Toggle("Log generation times", logGenerationTimes.boolValue);
+				showDebug.boolValue = EditorGUILayout.Toggle("Show LOD debug", showDebug.boolValue);
 			}
 			break;
 		case Tab.PAINTING:
+			if(planet.uv1type != Planet.UV.CONTINUOUS)
+				EditorGUILayout.HelpBox("Terrain painting requires UV1 type to be Continuous in the SHADER tab during painting, switch to it and regenerate.", MessageType.Warning);
+
 			EditorGUILayout.LabelField("Brush settings", EditorStyles.boldLabel);
 
 			planet.useBrushTexture = EditorGUILayout.Toggle("Use brush texture:", planet.useBrushTexture);
@@ -299,6 +324,100 @@ public class PlanetEditor : Editor
 				planet.ClearModifiers();
 				Generate(planet);
 			}
+			break;
+		case Tab.SHADER:
+			EditorGUILayout.LabelField("Terrain material:");
+			planet.terrainMaterial = (Material)EditorGUILayout.ObjectField(planet.terrainMaterial, typeof(Material), false);
+
+			EditorGUILayout.Space();
+			
+			EditorGUILayout.LabelField("UVs", EditorStyles.boldLabel);
+			planet.uv1type = (Planet.UV)EditorGUILayout.EnumPopup("UV1 type:", planet.uv1type);
+			planet.uv2 = EditorGUILayout.Toggle("Generate UV2:", planet.uv2);
+			if(planet.uv2)
+				planet.uv2type = (Planet.UV)EditorGUILayout.EnumPopup("UV2 type:", planet.uv2type);
+
+			EditorGUILayout.HelpBox("Default shaders use Continuous UV1 for splat texturing. Global maps use Spherical UV2 and Surface textures use Surface UV2.", MessageType.Info);
+			
+			EditorGUILayout.Space();
+			
+			EditorGUILayout.LabelField("Texture generation", EditorStyles.boldLabel);
+			EditorGUILayout.HelpBox("Texture nodes from the module file will appear here.", MessageType.Info);
+
+			if(planet.Terrain != null) {
+				if(planet.textureNodeInstances == null)
+					planet.textureNodeInstances = new Planet.TextureNodeInstance[0];
+
+				if(planet.textureNodeInstances.Length != planet.Terrain.textureNodes.Count) {
+					Planet.TextureNodeInstance[] newInstances = new Planet.TextureNodeInstance[planet.Terrain.textureNodes.Count];
+					for(int i = 0; i < planet.Terrain.textureNodes.Count; i++) {
+						bool createNewInstance = true;
+						if(i < planet.textureNodeInstances.Length) {
+							if(planet.textureNodeInstances[i] != null) {
+								newInstances[i] = planet.textureNodeInstances[i];
+								createNewInstance = false;
+							}
+						}
+						if(createNewInstance) {
+							newInstances[i] = new Planet.TextureNodeInstance(planet.Terrain.textureNodes[i]);
+						}
+					}
+					planet.textureNodeInstances = newInstances;
+				}
+				
+				for(int i = 0; i < planet.textureNodeInstances.Length; i++) {
+					Planet.TextureNodeInstance tni = planet.textureNodeInstances[i];
+					EditorGUILayout.LabelField(tni.node.textureId, EditorStyles.boldLabel);
+
+					EditorGUILayout.LabelField("Material property name:");
+					tni.materialPropertyName = EditorGUILayout.TextField(tni.materialPropertyName);
+					
+					tni.generateSurfaceTextures = EditorGUILayout.Toggle("Generate surface textures:", tni.generateSurfaceTextures);
+					if(tni.generateSurfaceTextures) {
+						EditorGUILayout.BeginHorizontal();
+						EditorGUILayout.PrefixLabel("Texture resolution:");
+						planet.textureResolution = EditorGUILayout.IntField(planet.textureResolution);
+						EditorGUILayout.EndHorizontal();
+					}
+					
+					tni.generateGlobalMap = EditorGUILayout.Toggle("Generate global map:", tni.generateGlobalMap);
+					if(tni.generateGlobalMap) {
+						EditorGUILayout.BeginHorizontal();
+						EditorGUILayout.PrefixLabel("Global map width:");
+						tni.globalMapSize = EditorGUILayout.IntField(tni.globalMapSize);
+						EditorGUILayout.EndHorizontal();
+					}
+					if(GUILayout.Button("Save GlobalMap")) {
+						for(int ii = 0; ii < planet.textureNodeInstances.Length; ii++)
+							planet.textureNodeInstances[ii].node = planet.Terrain.textureNodes[ii];
+
+						string savepath = EditorUtility.SaveFilePanel("Export texture", Application.dataPath, tni.materialPropertyName, "");
+						if(savepath.Length != 0) {
+							
+							float progress = 1;
+							float total = 2;
+							
+							EditorUtility.DisplayProgressBar("Planet generator", "Generating texture...", progress / total);
+							Texture2D texture = GlobalMapUtility.Generate(tni.globalMapSize, tni.node.GetModule());
+							progress++;
+							EditorUtility.DisplayProgressBar("Planet generator", "Saving texture...", progress / total);
+							File.WriteAllBytes(savepath + ".png", texture.EncodeToPNG());
+							
+							EditorUtility.ClearProgressBar();
+							AssetDatabase.Refresh();
+						}
+					}
+
+					EditorGUILayout.Space();
+				}
+	
+				if(planet.Terrain.textureNodes.Count == 0) {
+					EditorGUILayout.LabelField("Module has no texture outputs defined.", EditorStyles.label);
+				}
+			}
+
+			EditorGUILayout.HelpBox("Surface textures are generated for each surface. Global maps are generated once during start.", MessageType.Info);
+
 			break;
 		}
 		
@@ -369,4 +488,6 @@ public class PlanetEditor : Editor
 		
 		EditorUtility.ClearProgressBar();
 	}
+}
+
 }

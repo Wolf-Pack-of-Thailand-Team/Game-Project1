@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace Planetary {
+
 public class BezierCurve {
 
 	public static float Evaluate(float time, SerializableKeyframe[] keyframes) {
@@ -72,4 +74,6 @@ public class BezierCurve {
 		p += ttt * p3;
 		return p;
 	}
+}
+
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Const : ModuleBase {
 	public float constValue = 0f;
 	
@@ -9,6 +11,8 @@ public class Const : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return constValue;
+		return Output(constValue);
 	}
+}
+
 }

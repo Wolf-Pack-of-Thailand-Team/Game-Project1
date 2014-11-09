@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Blend : ModuleBase {
 	private ModuleBase module1, module2, module3;
 	
@@ -11,6 +13,8 @@ public class Blend : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return (module2.GetValue(position) - module1.GetValue(position)) * ((module3.GetValue(position) + 1f) / 2f) + module1.GetValue(position);
+		return Output((module2.GetValue(position) - module1.GetValue(position)) * ((module3.GetValue(position) + 1f) / 2f) + module1.GetValue(position));
 	}
+}
+
 }

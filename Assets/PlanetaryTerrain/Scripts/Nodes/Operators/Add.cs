@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Add : ModuleBase {
-	
 	private ModuleBase module1, module2;
 	
 	public Add(ModuleBase m1, ModuleBase m2) {
@@ -11,6 +12,8 @@ public class Add : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return module1.GetValue(position) + module2.GetValue(position);
+		return Output(module1.GetValue(position) + module2.GetValue(position));
 	}
+}
+
 }

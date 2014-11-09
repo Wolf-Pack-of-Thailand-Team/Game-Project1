@@ -2,14 +2,14 @@ using UnityEngine;
 using System.Collections;
 using System.Runtime.Serialization;
 
+namespace Planetary {
+
 [System.Serializable()]
 public class MacroNode : Node {
 	
 	public string path;
 	
 	public float frequencyScale = 1f;
-	
-	[System.NonSerialized] private ModuleBase module;
 	
 	public MacroNode(int x, int y) : base("Macro", new SerializableRect(x, y, 200, 140)) {
 		
@@ -28,7 +28,9 @@ public class MacroNode : Node {
 			Debug.LogError("MacroNode: Terrain module could not be loaded from " + path);
 			this.module = new ModuleBase();
 		}
-		
+		SetOutputOptions();
 		return this.module;
 	}
+}
+
 }

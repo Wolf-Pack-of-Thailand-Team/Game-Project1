@@ -1,7 +1,8 @@
+using UnityEngine;
 
+namespace Planetary {
 
-public class PerlinNoise 
-{
+public class PerlinNoise {
 
 	private static int[] permutation;
 
@@ -53,6 +54,67 @@ public class PerlinNoise
 		return Lerp(w, g1, g2);
 	}
 
+	public static Vector4 dNoise(double x, double y, double z) {
+		int X = FastFloor(x) & 255;
+		int Y = FastFloor(y) & 255;
+		int Z = FastFloor(z) & 255;
+		x -= FastFloor(x);
+		y -= FastFloor(y);
+		z -= FastFloor(z);
+
+		double u = x;
+		double v = y;
+		double w = z;
+
+		//double u = 3*x*x - 2*x*x*x;
+		//double v = 3*y*y - 2*y*y*y;
+		//double w = 3*z*z - 2*z*z*z;
+
+		double du = 30 * u*u*u*u - 60 * u*u*u + 30 * u*u;//30.0*u*u*(u*(u-2.0)+1.0);
+		double dv = 30 * v*v*v*v - 60 * v*v*v + 30 * v*v;//30.0*v*v*(v*(v-2.0)+1.0);
+		double dw = 30 * w*w*w*w - 60 * w*w*w + 30 * w*w;//30.0*w*w*(w*(w-2.0)+1.0);
+
+		u = Fade(x);
+		v = Fade(y);
+		w = Fade(z);
+
+		int A = permutation[X] + Y;
+		int AA = permutation[A] + Z;
+		int AB = permutation[A + 1] + Z;
+		int B = permutation[X + 1] + Y;
+		int BA = permutation[B] + Z;
+		int BB = permutation[B + 1] + Z;
+
+		double a = Gradient(permutation[AA], x, y, z);
+		double b = Gradient(permutation[BA], x - 1, y, z);
+		double c = Gradient(permutation[AB], x, y - 1, z);
+		double d = Gradient(permutation[BB], x - 1, y - 1, z);
+		double e = Gradient(permutation[AA + 1], x, y, z - 1);
+		double f = Gradient(permutation[BA + 1], x - 1, y  , z - 1 );
+		double g = Gradient(permutation[AB + 1], x  , y - 1, z - 1 );
+		double h = Gradient(permutation[BB + 1], x - 1, y - 1, z - 1 );
+
+		double k0 =   a;
+		double k1 =   b - a;
+		double k2 =   c - a;
+		double k3 =   e - a;
+		double k4 =   a - b - c + d;
+		double k5 =   a - c - e + g;
+		double k6 =   a - b - e + f;
+		double k7 = - a + b + c - d + e - f - g + h;
+
+		double noise = k0 + k1*u + k2*v + k3*w + k4*u*v + k5*v*w + k6*w*u + k7*u*v*w;
+
+		return new Vector4((float)noise,
+		                   (float)(du * (k1 + k4*v + k6*w + k7*v*w)),
+		                   (float)(dv * (k2 + k5*w + k4*u + k7*w*u)),
+		                   (float)(dw * (k3 + k6*u + k5*v + k7*u*v)));
+
+		//double g1 = Lerp(v, Lerp(u, a, b), Lerp(u, c, d));
+		//double g2 = Lerp(v, Lerp(u, e, f), Lerp(u, g, h));
+		//return Lerp(w, g1, g2);
+	}
+
 	private static int FastFloor(double x) {
 		return x > 0 ? (int)x : (int)x - 1;
 	}
@@ -68,4 +130,6 @@ public class PerlinNoise
 		double v = h < 4 ? y : h == 12 || h == 14 ? x : z;
 		return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 	}
+}
+
 }

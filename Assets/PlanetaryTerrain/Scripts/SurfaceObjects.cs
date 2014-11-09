@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+namespace Planetary {
+
 [ExecuteInEditMode()]
 public class SurfaceObjects : MonoBehaviour {
 
@@ -55,4 +57,6 @@ public class SurfaceObjects : MonoBehaviour {
 			}
 		}
 	}
+}
+
 }

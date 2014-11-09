@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
-public class Abs : ModuleBase {
+namespace Planetary {
 
+public class Abs : ModuleBase {
 	private ModuleBase module1;
 	
 	public Abs(ModuleBase m1) {
@@ -10,6 +11,8 @@ public class Abs : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return Mathf.Abs(module1.GetValue(position));
+		return Output(Mathf.Abs(module1.GetValue(position)));
 	}
+}
+
 }

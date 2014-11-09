@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class AutoRotate : MonoBehaviour {
 
 	public Vector3 rotation = new Vector3(0,0,0);
@@ -9,4 +11,6 @@ public class AutoRotate : MonoBehaviour {
 	void Update () {
 		transform.Rotate(rotation * Time.deltaTime);
 	}
+}
+
 }

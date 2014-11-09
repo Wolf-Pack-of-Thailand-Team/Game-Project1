@@ -6,6 +6,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System;
 
+namespace Planetary {
+
 [System.Serializable()]
 public class TerrainModule
 {
@@ -13,6 +15,7 @@ public class TerrainModule
 	
 	public Node[] serializedNodes;
 	public OutputNode output;
+	public List<TextureNode> textureNodes;
 	
 	public bool randomizeSeeds = false;
 	public float seed;
@@ -32,6 +35,7 @@ public class TerrainModule
 		SetSeeds();
 		SetFrequencyScale();
 		
+		FindOutputNode();
 		module = output.GetModule();
 	}
 	
@@ -40,10 +44,11 @@ public class TerrainModule
 			seed = UnityEngine.Random.Range(-1000f, 1000f);
 		
 		// find generators that have seeds
-		foreach(Node n in nodes) {
+		for(int i = 0; i < nodes.Count; i++) {
+			Node n = nodes[i];
 			if(n is GeneratorNode) {
 				GeneratorNode g = (GeneratorNode)n;
-				g.seed = seed;
+				g.seed = seed + i;
 			}
 		}
 	}
@@ -153,17 +158,25 @@ public class TerrainModule
 
 		return ps;
 	}
-	
+
 	private bool FindOutputNode() {
-		// find outputnode
-		foreach(Node n in nodes) {
+		// find outputnode and texture nodes
+		output = null;
+		textureNodes = new List<TextureNode>();
+		for(int i = 0; i < nodes.Count; i++) {
+			Node n = nodes[i];
 			if(n is OutputNode) {
 				output = (OutputNode)n;
-				return true;
+			}
+			if(n is TextureNode) {
+				textureNodes.Add((TextureNode)n);
 			}
 		}
-		Debug.LogError("OutputNode not found");
-		return false;
+		if(output == null) {
+			Debug.LogError("OutputNode not found");
+			return false;
+		}
+		return true;
 	}
 	
 	// Deserialization binder
@@ -186,4 +199,6 @@ public class TerrainModule
 	        return null;
 	    }
 	}
+}
+
 }

@@ -6,6 +6,8 @@ using System;
 using System.Linq;
 using System.Threading;
 
+namespace Planetary {
+
 public class ThreadScheduler : MonoBehaviour {
 	
 	private static bool initialized = false;
@@ -102,3 +104,4 @@ public class ThreadScheduler : MonoBehaviour {
 	#endregion
 }
 
+}

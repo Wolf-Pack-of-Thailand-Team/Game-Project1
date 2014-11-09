@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+using Planetary;
+
 public class PlanetaryTerrain {
 	
 	public static Planet CreatePlanet() {
@@ -10,8 +12,6 @@ public class PlanetaryTerrain {
 	public static Planet CreatePlanet(string name) {
 		GameObject go = new GameObject(name);
 		Planet planet = go.AddComponent<Planet>();
-		SurfaceColor surfaceColor = go.AddComponent<SurfaceColor>();
-		surfaceColor.shader = Shader.Find("TexturedPlanet");
 		
 		return planet;
 	}

@@ -2,6 +2,8 @@
 using UnityEditor;
 using System.Collections;
 
+namespace Planetary {
+
 [CustomEditor(typeof(PlacementHelper))]
 public class PlacementHelperEditor : Editor {
 
@@ -97,4 +99,6 @@ public class PlacementHelperEditor : Editor {
 			Handles.DrawWireDisc(lastPoint, lastNormal, placementHelper.scale.magnitude);
 		}
 	}
+}
+
 }

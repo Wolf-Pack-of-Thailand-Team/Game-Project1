@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Subtract : ModuleBase {
 
 	private ModuleBase module1, module2;
@@ -11,6 +13,8 @@ public class Subtract : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return module1.GetValue(position) - module2.GetValue(position);
+		return Output(module1.GetValue(position) - module2.GetValue(position));
 	}
+}
+
 }

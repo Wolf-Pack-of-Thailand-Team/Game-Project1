@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Terrace : ModuleBase {
 
 	private ModuleBase module1;
@@ -22,6 +24,8 @@ public class Terrace : ModuleBase {
 			return Mathf.Lerp(min, max, diff * power);
 		}
 		
-		return value;
+		return Output(value);
 	}
+}
+
 }

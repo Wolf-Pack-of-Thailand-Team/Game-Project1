@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 [System.Serializable()]
 public class SerializableKeyframe
 {
@@ -44,4 +46,6 @@ public class SerializableKeyframe
 			keys[i] = new SerializableKeyframe(ks[i]);
 		return keys;
 	}
+}
+
 }

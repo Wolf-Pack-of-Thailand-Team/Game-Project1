@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Translate : ModuleBase {
 
 	private ModuleBase module1;
@@ -17,6 +19,8 @@ public class Translate : ModuleBase {
 		position.x += x;
 		position.y += y;
 		position.z += z;
-		return module1.GetValue(position);
+		return Output(module1.GetValue(position));
 	}
+}
+
 }

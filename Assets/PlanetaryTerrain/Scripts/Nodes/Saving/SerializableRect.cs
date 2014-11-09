@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 [System.Serializable()]
 public class SerializableRect
 {
@@ -22,3 +24,4 @@ public class SerializableRect
 	}
 }
 
+}

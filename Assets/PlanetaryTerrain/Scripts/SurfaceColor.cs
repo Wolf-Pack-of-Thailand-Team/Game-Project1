@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+namespace Planetary {
+
 [ExecuteInEditMode()]
 public class SurfaceColor : MonoBehaviour {
 	
@@ -54,7 +56,8 @@ public class SurfaceColor : MonoBehaviour {
 		if(planet == null)
 			return;
 		
-		material = new Material(shader);
+		if(material == null)
+			material = new Material(shader);
 		
 		List<Surface> surfaces = planet.surfaces;
 		if(surfaces == null) {
@@ -73,13 +76,18 @@ public class SurfaceColor : MonoBehaviour {
 	public void ApplyToSurface(Surface surface) {
 		if(surface == null)
 			return;
+
+		//material = new Material(Shader.Find("Diffuse"));
+		
+		//surface.renderer.sharedMaterial = material;
+		//surface.renderer.sharedMaterial.SetTexture("_MainTex", surface.textures[0]);
 		
 		if(material == null)
 			material = new Material(shader);
 		
 		surface.renderer.sharedMaterial = material;
 		
-		surface.renderer.sharedMaterial.SetFloat("_Value1", value1);
+		/*surface.renderer.sharedMaterial.SetFloat("_Value1", value1);
 		surface.renderer.sharedMaterial.SetFloat("_Value2", value2);
 		surface.renderer.sharedMaterial.SetFloat("_Value3", value3);
 			
@@ -89,13 +97,15 @@ public class SurfaceColor : MonoBehaviour {
 		surface.renderer.sharedMaterial.SetColor("_Color2", color2);
 		surface.renderer.sharedMaterial.SetColor("_Color3", color3);
 		surface.renderer.sharedMaterial.SetColor("_Color4", color4);
-			
-		surface.renderer.sharedMaterial.SetTexture("_Texture1", texture1);
-		surface.renderer.sharedMaterial.SetTexture("_Texture2", texture2);
-		surface.renderer.sharedMaterial.SetTexture("_Texture3", texture3);
-		surface.renderer.sharedMaterial.SetTexture("_Texture4", texture4);
 
-		surface.renderer.sharedMaterial.SetVector("_UvScale", textureScales);
+		if(useTextures) {
+			surface.renderer.sharedMaterial.SetTexture("_Texture1", texture1);
+			surface.renderer.sharedMaterial.SetTexture("_Texture2", texture2);
+			surface.renderer.sharedMaterial.SetTexture("_Texture3", texture3);
+			surface.renderer.sharedMaterial.SetTexture("_Texture4", texture4);
+
+			surface.renderer.sharedMaterial.SetVector("_UvScale", textureScales);
+		}
 
 		if(useBumpMaps) {
 			surface.renderer.sharedMaterial.SetTexture("_Normal1", normal1);
@@ -113,6 +123,8 @@ public class SurfaceColor : MonoBehaviour {
 			
 		// equator
 		surface.renderer.sharedMaterial.SetColor("_EquatorColor", equatorColor);
-		surface.renderer.sharedMaterial.SetVector("_Equator", new Vector4(equatorWidth, equatorStrenght, equatorHeight));
+		surface.renderer.sharedMaterial.SetVector("_Equator", new Vector4(equatorWidth, equatorStrenght, equatorHeight));*/
 	}
+}
+
 }

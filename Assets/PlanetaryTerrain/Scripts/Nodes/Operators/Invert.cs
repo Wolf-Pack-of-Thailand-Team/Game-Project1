@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Invert : ModuleBase {
 
 	private ModuleBase module1;
@@ -10,6 +12,8 @@ public class Invert : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return -module1.GetValue(position);
+		return Output(-module1.GetValue(position));
 	}
+}
+
 }

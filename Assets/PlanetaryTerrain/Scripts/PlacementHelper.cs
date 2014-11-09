@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+namespace Planetary {
+
 [ExecuteInEditMode()]
 public class PlacementHelper : MonoBehaviour {
 
@@ -121,4 +123,6 @@ public class PlacementHelper : MonoBehaviour {
 			}
 		}
 	}
+}
+
 }

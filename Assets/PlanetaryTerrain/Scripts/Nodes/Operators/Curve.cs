@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Curve : ModuleBase {
 
 	private ModuleBase module1;
@@ -13,7 +15,12 @@ public class Curve : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
+		if(module1 == null)
+			return 0f;
+
 		// convert to 0-1 range, multiply with curve and convert back to -1-1 range
-		return BezierCurve.Evaluate(Mathf.Clamp01((module1.GetValue(position) + 1f) / 2f), keyframes) * 2f - 1f;
+		return Output(BezierCurve.Evaluate(Mathf.Clamp01((module1.GetValue(position) + 1f) / 2f), keyframes) * 2f - 1f);
 	}
+}
+
 }

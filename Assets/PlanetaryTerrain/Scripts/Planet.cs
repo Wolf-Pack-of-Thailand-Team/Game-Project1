@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
+namespace Planetary {
+
 public class Planet : MonoBehaviour 
 {
 	public TextAsset terrainAsset;
@@ -21,12 +23,25 @@ public class Planet : MonoBehaviour
 	public float radius = 10f;
 	public float heightVariation = 0.0075f;
 	public float frequencyScale = 1f;
-	public int subdivisions = 1;
-	public int meshResolution = 64;
-	
+
 	public bool generateOnStart = false;
 	public bool randomizeSeeds = false;
 	public float seed = 0;
+
+	// mesh settings
+	public int subdivisions = 1;
+	public int meshResolution = 64;
+	public bool createBorders = true;
+	public bool logGenerationTimes = false;
+
+	public bool uv2 = false;
+	public UV uv1type, uv2type;
+	public enum UV {
+		CONTINUOUS, SPHERICAL, SURFACE
+	}
+
+	// texture settings
+	public int textureResolution = 32;
 	
 	// list of terrain surfaces
 	public List<Surface> surfaces = new List<Surface>();
@@ -34,6 +49,10 @@ public class Planet : MonoBehaviour
 
 	// surface generation event
 	public event Surface.SurfaceDelegate SurfaceGenerated;
+
+	// event for when surface with collider has been generated
+	public delegate void ColliderGenerationDelegate(int lodLevel);
+	public event ColliderGenerationDelegate ColliderGenerated;
 	
 	// LOD
 	[SerializeField] private bool _useLod = false;
@@ -45,8 +64,8 @@ public class Planet : MonoBehaviour
 				lodDistances = new float[_maxLodLevel];
 			if(generateColliders == null)
 				generateColliders = new bool[_maxLodLevel+1];
-			if(disableCollidersOnSubdivision == null)
-				disableCollidersOnSubdivision = new bool[_maxLodLevel+1];
+			//if(disableCollidersOnSubdivision == null)
+			//	disableCollidersOnSubdivision = new bool[_maxLodLevel+1];
 		}
 	}
 	
@@ -56,7 +75,7 @@ public class Planet : MonoBehaviour
 	public int maxLodLevel {
 		get { return _maxLodLevel; }
 		set { 
-			if(value != _maxLodLevel) {
+			if(value != _maxLodLevel && value > 0) {
 				_maxLodLevel = value;
 						
 				float[] newLodDistances = new float[_maxLodLevel];
@@ -73,6 +92,21 @@ public class Planet : MonoBehaviour
 					}
 				}
 				lodDistances = newLodDistances;
+
+				float[] newLodDots = new float[_maxLodLevel];
+				if(lodDots != null) {
+					if(lodDots.Length != 0) {
+						for(int i = 0; i < newLodDots.Length; i++) {
+							if(i < lodDots.Length) {
+								newLodDots[i] = lodDots[i];
+							}
+							else {
+								newLodDots[i] = 0.5f + .49f * ((float)i / value);//lodDots[lodDots.Length - 1] * Mathf.Pow(.5f, i - lodDots.Length+1);
+							}
+						}
+					}
+				}
+				lodDots = newLodDots;
 				
 				bool[] newGenerateColliders = new bool[_maxLodLevel+1];
 				if(generateColliders != null) {
@@ -89,7 +123,7 @@ public class Planet : MonoBehaviour
 				}
 				generateColliders = newGenerateColliders;
 
-				bool[] newDisableCollidersOnSubdivision = new bool[_maxLodLevel+1];
+				/*bool[] newDisableCollidersOnSubdivision = new bool[_maxLodLevel+1];
 				if(disableCollidersOnSubdivision != null) {
 					if(disableCollidersOnSubdivision.Length != 0) {
 						for(int i = 0; i < newLodDistances.Length; i++) {
@@ -102,14 +136,18 @@ public class Planet : MonoBehaviour
 						}
 					}
 				}
-				disableCollidersOnSubdivision = newDisableCollidersOnSubdivision;
+				disableCollidersOnSubdivision = newDisableCollidersOnSubdivision;*/
 			}
 		}
 	}
 	
 	public float[] lodDistances = new float[1];
+	public float[] lodDots = new float[1];
 	public bool[] generateColliders = new bool[2];
-	public bool[] disableCollidersOnSubdivision = new bool[2];
+	//public bool[] disableCollidersOnSubdivision = new bool[2];
+
+	// materials & textures
+	public Material terrainMaterial;
 
 	/// <summary>
 	/// Start 
@@ -139,6 +177,33 @@ public class Planet : MonoBehaviour
 			LoadModule();
 		
 		if(terrain != null) {
+			// global maps
+			if(textureNodeInstances == null)
+				textureNodeInstances = new Planet.TextureNodeInstance[0];
+			
+			if(textureNodeInstances.Length != terrain.textureNodes.Count) {
+				Planet.TextureNodeInstance[] newInstances = new Planet.TextureNodeInstance[terrain.textureNodes.Count];
+				for(int i = 0; i < terrain.textureNodes.Count; i++) {
+					bool createNewInstance = true;
+					if(i < textureNodeInstances.Length) {
+						if(textureNodeInstances[i] != null) {
+							newInstances[i] = textureNodeInstances[i];
+							createNewInstance = false;
+						}
+					}
+					if(createNewInstance) {
+						newInstances[i] = new Planet.TextureNodeInstance(terrain.textureNodes[i]);
+					}
+				}
+				textureNodeInstances = newInstances;
+			}
+
+			for(int i = 0; i < textureNodeInstances.Length; i++) {
+				textureNodeInstances[i].node = terrain.textureNodes[i];
+				if(textureNodeInstances[i].generateGlobalMap)
+					GenerateGlobalMaps(textureNodeInstances[i]);
+			}
+
 			// initialize modifiers if not existing already
 			if(!modifiersInitialized){
 				modifiersInitialized = true;
@@ -264,6 +329,8 @@ public class Planet : MonoBehaviour
 	/// </summary>
 	private void InstantiateSurface(int id, Vector3 start, Vector3 end, Vector3 topRight, Vector3 bottomLeft, SurfacePosition sp, int sx, int sy) {
 		GameObject t = new GameObject("Surface" + id);
+		t.layer = gameObject.layer;
+		t.tag = gameObject.tag;
 		t.transform.parent = this.transform;
 		t.transform.position = transform.position;
 		Surface surface = t.AddComponent<Surface>();
@@ -298,8 +365,13 @@ public class Planet : MonoBehaviour
 	/// Should only be called by Surfaces to notify the planet and generate the event
 	/// </summary>
 	public void ReportGeneration(Surface s) {
+		s.renderer.sharedMaterial = terrainMaterial;
+
 		if(SurfaceGenerated != null)
 			SurfaceGenerated(s);
+
+		if(generateColliders[s.lodLevel])
+			ColliderGenerated(s.lodLevel);
 	}
 
 	/// <summary>
@@ -341,7 +413,25 @@ public class Planet : MonoBehaviour
 		if(!subdivisionQueue.Contains(s)) {
 			subdivisionQueue.Add(s);
 		}
+
+		s.CalculatePriority();
+
+		// sort queue to find highest priority surfaces
+		if(surfaceComparer == null)
+			surfaceComparer = new SurfacePriorityComparer();
+		subdivisionQueue.Sort(surfaceComparer);
 	}
+
+	/// <summary>
+	/// Removes surface from queue
+	/// </summary>
+	public void RemoveFromQueue(Surface s) {
+		if(subdivisionQueue.Contains(s) && !generationQueue.Contains(s)) {
+			subdivisionQueue.Remove(s);
+			//Debug.Log("Surface removed from queue");
+		}
+	}
+
 	/// <summary>
 	/// Event handler called by the surface when all subsurfaces have been generated.
 	/// </summary>
@@ -368,11 +458,6 @@ public class Planet : MonoBehaviour
 				
 			// clean up generation queue
 			generationQueue.RemoveAll(item => item == null);
-				
-			// sort queue to find highest priority surfaces
-			//if(surfaceComparer == null)
-			//	surfaceComparer = new SurfacePriorityComparer();
-			//subdivisionQueue.Sort(surfaceComparer);
 			
 			//Debug.Log("queue: " + subdivisionQueue.Count + ", generating: " + generationQueue.Count);
 			for(int i = 0; i < simultaneousSubdivisions; i++) {
@@ -394,10 +479,10 @@ public class Planet : MonoBehaviour
 	/// </summary>
 	public class SurfacePriorityComparer : IComparer<Surface> {
 		public int Compare(Surface x, Surface y) {
-			if (x.priorityPenalty < y.priorityPenalty)
-               return -1;
-            if (x.priorityPenalty > y.priorityPenalty)
+			if (x.priorityPenalty > y.priorityPenalty)
                return 1;
+            if (x.priorityPenalty < y.priorityPenalty)
+               return -1;
             else
                return 0;
 		}
@@ -861,12 +946,23 @@ public class Planet : MonoBehaviour
 	
 	#region Debug
 	
-	bool showDebugInfo = false;
-	bool showDistance = false;
+	public bool showDebugInfo = false;
+	bool showDistance = true;
 	Vector3 screenPoint;
+	bool[] showLodLevel;
 	
 	void OnGUI() {
 		if(showDebugInfo) {
+			if(showLodLevel == null) {
+				showLodLevel = new bool[maxLodLevel+1];
+				for(int i = 0; i < maxLodLevel+1; i++)
+					showLodLevel[i] = true;
+			}
+			
+			for(int i = 0; i < showLodLevel.Length; i++) {
+				showLodLevel[i] = GUI.Toggle(new Rect(0, i * 25, 100, 20), showLodLevel[i], "Show LOD " + i);
+			}
+
 			for(int i = 0; i < surfaces.Count; i++) {
 				ShowSubsurfaces(surfaces[i]);
 				if(!surfaces[i].hasSubsurfaces)
@@ -886,20 +982,51 @@ public class Planet : MonoBehaviour
 	}
 	
 	void ShowDebugGUI(Surface s) {
-		if(s.renderer.enabled) {
-			screenPoint = Camera.main.WorldToScreenPoint(s.closestCorner);
+		if(s.renderer.enabled && !s.hasSubsurfaces && showLodLevel[s.lodLevel]) {
+			Vector3 transformedPoint = transform.TransformPoint(s.closestCorner);
+			screenPoint = Camera.main.WorldToScreenPoint(transformedPoint);
 			screenPoint.y = Screen.height - screenPoint.y;
 			
-			if(screenPoint.x > 0f && screenPoint.x < Screen.width && screenPoint.y > 0f && screenPoint.y < Screen.height) {
-				GUI.color = Color.Lerp(Color.white, Color.red, (float)s.lodLevel / (float)maxLodLevel);
-				
-				if(showDistance)
-					GUI.Label(new Rect(screenPoint.x, screenPoint.y, 80, 50), s.lodLevel.ToString() + ": " + s.distance.ToString("0"));
-				else
-					GUI.Label(new Rect(screenPoint.x, screenPoint.y, 80, 50), "LOD: " + s.lodLevel.ToString());
+			Vector3 heading = transformedPoint - Camera.main.transform.position;
+
+			if(Vector3.Dot(Camera.main.transform.forward, heading) > 0f) {
+				if(screenPoint.x > 0f && screenPoint.x < Screen.width && screenPoint.y > 0f && screenPoint.y < Screen.height) {
+					GUI.color = Color.white;
+					
+					if(showDistance)
+						GUI.Box(new Rect(screenPoint.x, screenPoint.y, 80, 20), s.lodLevel.ToString() + ": " + s.distance.ToString("0"));
+					else
+						GUI.Box(new Rect(screenPoint.x, screenPoint.y, 80, 20), "Level " + s.lodLevel.ToString());
+				}
 			}
 		}
 	}
 	
 	#endregion
+
+	#region GlobalMaps
+
+	public TextureNodeInstance[] textureNodeInstances;
+
+	public void GenerateGlobalMaps(TextureNodeInstance tni) {
+		Texture2D globalMap = GlobalMapUtility.Generate(tni.globalMapSize, tni.node.GetModule());
+		terrainMaterial.SetTexture(tni.materialPropertyName, globalMap);
+	}
+
+	[System.Serializable()]
+	public class TextureNodeInstance {
+		public TextureNode node;
+		public int globalMapSize = 512;
+		public bool generateGlobalMap = false, generateSurfaceTextures = false;
+		public string materialPropertyName = "";
+
+		public TextureNodeInstance(TextureNode tn) {
+			this.node = tn;
+			this.materialPropertyName = tn.textureId;
+		}
+	}
+	
+	#endregion
+}
+
 }

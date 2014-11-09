@@ -2,15 +2,16 @@ using UnityEngine;
 using System.Collections;
 using System.Runtime.Serialization;
 
+namespace Planetary {
+
 [System.Serializable()]
 public class OperatorNode : Node
 {
-	[System.NonSerialized] private ModuleBase module;
-	
 	public enum OPERATORTYPE {
 		ABS, ADD, BLEND, CLAMP, EXPONENT, INVERT,
 		MAX, MIN, MULTIPLY, POWER, SUBTRACT,
-		TERRACE, TRANSLATE, DIVIDE, CURVE, WEIGHT
+		TERRACE, TRANSLATE, DIVIDE, CURVE, WEIGHT,
+		WARP, SELECT
 	}
 	public OPERATORTYPE type, lastType;
 	
@@ -108,8 +109,15 @@ public class OperatorNode : Node
 			case OPERATORTYPE.WEIGHT:
 				module = new Weight(inputs[0].GetModule(), min, max);
 				break;
+			case OPERATORTYPE.WARP:
+				module = new Warp(power, inputs[0].GetModule(), inputs[1].GetModule());
+				break;
+			case OPERATORTYPE.SELECT:
+				module = new Select(inputs[0].GetModule(), min, max);
+				break;
 		}
 		
+		SetOutputOptions();
 		return this.module;
 	}
 	
@@ -161,7 +169,11 @@ public class OperatorNode : Node
 			case OPERATORTYPE.CURVE:
 				CreateInputs(1);
 				break;
+			case OPERATORTYPE.WARP:
+				CreateInputs(2);
+				break;
 		}
 	}
 }
 
+}

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Exponent : ModuleBase {
 
 	private ModuleBase module1;
@@ -12,6 +14,8 @@ public class Exponent : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return Mathf.Pow(module1.GetValue(position), exponent);
+		return Output(Mathf.Pow(module1.GetValue(position), exponent));
 	}
+}
+
 }

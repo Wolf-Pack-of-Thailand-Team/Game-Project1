@@ -1,0 +1,615 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: TexturedPlanet
+  m_Shader: {fileID: 4800000, guid: 54fcf5bdf34a73b4d83d0ea2e1b1b1d9, type: 3}
+  m_ShaderKeywords: []
+  m_CustomRenderQueue: -1
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _SplatA0
+        second:
+          m_Texture: {fileID: 2800000, guid: 6605af670a1c543d8b9a53816f21eccf, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 10, y: 0}
+      data:
+        first:
+          name: _SplatA1
+        second:
+          m_Texture: {fileID: 2800000, guid: e87e81a21d63b4905a5b22a403846dac, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _SplatA2
+        second:
+          m_Texture: {fileID: 2800000, guid: d489cd1cf4c2f45c3b7b5b52db81578f, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _SplatA3
+        second:
+          m_Texture: {fileID: 2800000, guid: 4671b6dbe72b24f0985c8aece34ac8aa, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _BumpMap01
+        second:
+          m_Texture: {fileID: 2800000, guid: 57731e05e58a04aef954c3e70d6364f6, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _BumpMap23
+        second:
+          m_Texture: {fileID: 2800000, guid: 1b060bfc924af47128bf0a08bdc23647, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _TERRAIN_HeightMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 349f7bb8ed30a4b2e9343f9d59d426b6, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ColorMapGlobal
+        second:
+          m_Texture: {fileID: 2800000, guid: 036fdb1256f8c422da9a2dd7720d874d, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _NormalMapGlobal
+        second:
+          m_Texture: {fileID: 2800000, guid: 6c65949ea7fa74eb8b083440e5d52c2c, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _BumpMapGlobal
+        second:
+          m_Texture: {fileID: 2800000, guid: 29a9f7096b78c4a80a57c1ba32554d89, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _VerticalTexture
+        second:
+          m_Texture: {fileID: 2800000, guid: 4671b6dbe72b24f0985c8aece34ac8aa, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Texture1
+        second:
+          m_Texture: {fileID: 2800000, guid: aa7840f8064e62c46921068faf157be3, type: 3}
+          m_Scale: {x: 100, y: 100}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Texture2
+        second:
+          m_Texture: {fileID: 2800000, guid: c8e7be704a6c2aa4aa1adf19ce32bb51, type: 3}
+          m_Scale: {x: 100, y: 100}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Texture3
+        second:
+          m_Texture: {fileID: 2800000, guid: 3d38fbfe199c4d64bb2c49b4847400f2, type: 3}
+          m_Scale: {x: 100, y: 100}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Texture4
+        second:
+          m_Texture: {fileID: 2800000, guid: 4e1ff3f317b926140886272844cee9e4, type: 3}
+          m_Scale: {x: 100, y: 100}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _SlopeTexture
+        second:
+          m_Texture: {fileID: 2800000, guid: 3ffff2a8fc18d41f397a20acec4e6b0c, type: 3}
+          m_Scale: {x: 500, y: 500}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ColorMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 3ff44b4eb93ee46be98a48d208794691, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Value1
+        second: .142857134
+      data:
+        first:
+          name: _Value2
+        second: .375
+      data:
+        first:
+          name: _Value3
+        second: .714285672
+      data:
+        first:
+          name: _TERRAIN_ReliefTransformTriplanarZ
+        second: 1
+      data:
+        first:
+          name: _TERRAIN_distance_start
+        second: 0
+      data:
+        first:
+          name: _TERRAIN_distance_transition
+        second: 20
+      data:
+        first:
+          name: _RTP_MIP_BIAS
+        second: -.428571433
+      data:
+        first:
+          name: RTP_ReflexLightDiffuseSoftness
+        second: .482142836
+      data:
+        first:
+          name: RTP_BackLightStrength
+        second: 0
+      data:
+        first:
+          name: _Fdensity
+        second: .000199999995
+      data:
+        first:
+          name: _Fstart
+        second: 0
+      data:
+        first:
+          name: _Fend
+        second: 0
+      data:
+        first:
+          name: _blend_multiplier
+        second: 1
+      data:
+        first:
+          name: _GlobalColorMapSaturation
+        second: 1
+      data:
+        first:
+          name: _GlobalColorMapSaturationFar
+        second: 1
+      data:
+        first:
+          name: _GlobalColorMapBrightness
+        second: 1
+      data:
+        first:
+          name: _GlobalColorMapBrightnessFar
+        second: 1
+      data:
+        first:
+          name: _GlobalColorMapNearMIP
+        second: 0
+      data:
+        first:
+          name: _GlobalColorMapDistortByPerlin
+        second: .00857142825
+      data:
+        first:
+          name: _NormalMapGlobalStrength
+        second: .964285731
+      data:
+        first:
+          name: _NormalMapGlobalFarOnly
+        second: 30
+      data:
+        first:
+          name: _TERRAIN_distance_start_bumpglobal
+        second: 24
+      data:
+        first:
+          name: rtp_perlin_start_val
+        second: 1
+      data:
+        first:
+          name: _TERRAIN_distance_transition_bumpglobal
+        second: 50
+      data:
+        first:
+          name: _BumpMapGlobalScale
+        second: .100000001
+      data:
+        first:
+          name: rtp_mipoffset_globalnorm_offset
+        second: .714285731
+      data:
+        first:
+          name: _VerticalTextureTiling
+        second: 50
+      data:
+        first:
+          name: _VerticalTextureGlobalBumpInfluence
+        second: .112500004
+      data:
+        first:
+          name: rtp_snow_strength
+        second: .910714328
+      data:
+        first:
+          name: rtp_global_color_brightness_to_snow
+        second: .589285672
+      data:
+        first:
+          name: rtp_snow_slope_factor
+        second: 3.875
+      data:
+        first:
+          name: rtp_snow_height_treshold
+        second: 102.5
+      data:
+        first:
+          name: rtp_snow_height_transition
+        second: 2.5
+      data:
+        first:
+          name: rtp_snow_specular
+        second: .400000006
+      data:
+        first:
+          name: rtp_snow_gloss
+        second: .200000003
+      data:
+        first:
+          name: rtp_snow_fresnel
+        second: .23535715
+      data:
+        first:
+          name: rtp_snow_diff_fresnel
+        second: .5
+      data:
+        first:
+          name: rtp_snow_edge_definition
+        second: 2
+      data:
+        first:
+          name: rtp_snow_deep_factor
+        second: 2
+      data:
+        first:
+          name: _PlanetRadius
+        second: 100
+      data:
+        first:
+          name: _PlanetAtmosphereLength
+        second: 105
+      data:
+        first:
+          name: _SlopeValue1
+        second: 0
+      data:
+        first:
+          name: _SlopeValue2
+        second: 0
+      data:
+        first:
+          name: _SlopeValue3
+        second: 0
+      data:
+        first:
+          name: _SlopeValue4
+        second: 0
+      data:
+        first:
+          name: _CoverageColor1Strength
+        second: 0
+      data:
+        first:
+          name: _CoverageColor1Comp
+        second: 0
+      data:
+        first:
+          name: _CoverageColor2Strength
+        second: 0
+      data:
+        first:
+          name: _CoverageColor2Comp
+        second: 0
+      data:
+        first:
+          name: _CoverageColor3Strength
+        second: 0
+      data:
+        first:
+          name: _CoverageColor3Comp
+        second: 0
+      data:
+        first:
+          name: _CoverageColor4Strength
+        second: 0
+      data:
+        first:
+          name: _CoverageColor4Comp
+        second: 0
+      data:
+        first:
+          name: _EquatorSize
+        second: .357142866
+      data:
+        first:
+          name: _EquatorBias
+        second: .517857134
+      data:
+        first:
+          name: _EquatorSnowDamp
+        second: .571428478
+      data:
+        first:
+          name: _PolarSize
+        second: .357142836
+      data:
+        first:
+          name: _PolarBias
+        second: 0
+      data:
+        first:
+          name: _PolarSnowBoost
+        second: 2.42857146
+      data:
+        first:
+          name: _GlossFromColormapAlphaStrength
+        second: .178571433
+      data:
+        first:
+          name: _GlossFromColormapAlphaGloss
+        second: .25
+      data:
+        first:
+          name: _GlossFromColormapAlphaNear
+        second: .178571433
+      data:
+        first:
+          name: _EmissionFromColormapAlphaColormap
+        second: 0
+      data:
+        first:
+          name: _EmissionFromColormapAlphaLightDependent
+        second: .982142866
+      data:
+        first:
+          name: _EmissionFromColormapAlphaNear
+        second: .200000003
+      data:
+        first:
+          name: _Polarity
+        second: 0
+      data:
+        first:
+          name: _PolarStrenght
+        second: 0
+      data:
+        first:
+          name: _Brightness
+        second: 2
+      data:
+        first:
+          name: _SlopeRange
+        second: 1
+      data:
+        first:
+          name: _ColorMapBlend
+        second: .339285702
+      data:
+        first:
+          name: _ColorMapDistance
+        second: 2000
+      data:
+        first:
+          name: _SlopePower
+        second: 1
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: .220588207, g: .220588207, b: .220588207, a: 1}
+      data:
+        first:
+          name: _Color1
+        second: {r: .443137258, g: .721568644, b: .380392164, a: 1}
+      data:
+        first:
+          name: _Color2
+        second: {r: .443137258, g: .721568644, b: .380392164, a: 1}
+      data:
+        first:
+          name: _Color3
+        second: {r: .450980395, g: .717647076, b: .396078438, a: 1}
+      data:
+        first:
+          name: _Color4
+        second: {r: 1, g: .956862748, b: .843137264, a: 1}
+      data:
+        first:
+          name: _EquatorColor
+        second: {r: .784313738, g: .333333343, b: 0, a: 1}
+      data:
+        first:
+          name: rtp_customAmbientCorrection
+        second: {r: 0, g: 0, b: 0, a: 1}
+      data:
+        first:
+          name: RTP_ReflexLightDiffuseColor1
+        second: {r: 1, g: 1, b: 1, a: .0500000007}
+      data:
+        first:
+          name: RTP_ReflexLightDiffuseColor2
+        second: {r: 1, g: 1, b: 1, a: .0500000007}
+      data:
+        first:
+          name: _FColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _FColor2
+        second: {r: .495458454, g: .850081265, b: .852941155, a: 1}
+      data:
+        first:
+          name: _FColor3
+        second: {r: .203921571, g: .278431386, b: .505882382, a: 1}
+      data:
+        first:
+          name: _Spec0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: RTP_gloss_mult0123
+        second: {r: .5, g: .5, b: .25, a: .5}
+      data:
+        first:
+          name: RTP_gloss2mask0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _LayerBrightness2Spec0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: RTP_gloss_shaping0123
+        second: {r: .5, g: .5, b: .5, a: .5}
+      data:
+        first:
+          name: _FarSpecCorrection0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: RTP_Fresnel0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: RTP_FresnelAtten0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: RTP_DiffFresnel0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _LayerAlbedo2SpecColor0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _LayerBrightness0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _LayerSaturation0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _MIPmult0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _MixScale0123
+        second: {r: .200000003, g: .200000003, b: .200000003, a: .200000003}
+      data:
+        first:
+          name: _MixBlend0123
+        second: {r: .5, g: .5, b: .5, a: .5}
+      data:
+        first:
+          name: _MixSaturation0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _MixBrightness0123
+        second: {r: 2, g: 2, b: 2, a: 2}
+      data:
+        first:
+          name: _MixReplace0123
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _GlobalColorMapBlendValues
+        second: {r: .300000012, g: .600000024, b: .800000012, a: 0}
+      data:
+        first:
+          name: _GlobalColorPerLayer0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _BumpMapGlobalStrength0123
+        second: {r: .300000012, g: .300000012, b: .300000012, a: .300000012}
+      data:
+        first:
+          name: _VerticalTexture0123
+        second: {r: .5, g: .5, b: .5, a: .5}
+      data:
+        first:
+          name: rtp_snow_strength_per_layer0123
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: rtp_snow_color
+        second: {r: .899999976, g: .899999976, b: 1, a: 1}
+      data:
+        first:
+          name: _CoverageColor1
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _CoverageColor2
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _CoverageColor3
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _CoverageColor4
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _EmissionFromColormapAlphaColor
+        second: {r: 0, g: 0, b: 0, a: 1}
+      data:
+        first:
+          name: _PolarColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _UvScale
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _Equator
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _CameraPos
+        second: {r: 68.1363678, g: 14.6037855, b: -72.4421844, a: 0}

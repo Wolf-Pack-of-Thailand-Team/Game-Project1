@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
+namespace Planetary {
+
 public class ModuleEditorWindow: EditorWindow {
 	
 	public static EditorWindow window = null;
@@ -137,21 +139,31 @@ public class ModuleEditorWindow: EditorWindow {
 	private void ShowModuleViewGUI() {
 		GUI.Label(new Rect(10, 50, 160, 20), "Create Nodes:");
 
-		if(GUI.Button(new Rect(10, 70, 100, 20), "New Generator")) {
+		if(GUI.Button(new Rect(10, 70, 100, 20), "Generator")) {
 			GeneratorNode g = new GeneratorNode((int)scrollPos.x + 200, (int)scrollPos.y + 200);
 			g.seed = Random.Range(-10000, 10000);
 			settings.nodes.Add(g);
 			windows.Add(new NodeWindow(g));
 		}
-		if(GUI.Button(new Rect(120, 70, 100, 20), "New Operator")) {
+		if(GUI.Button(new Rect(120, 70, 100, 20), "Operator")) {
 			OperatorNode o = new OperatorNode((int)scrollPos.x + 200, (int)scrollPos.y + 200);
 			settings.nodes.Add(o);
 			windows.Add(new NodeWindow(o));
 		}
-		if(GUI.Button(new Rect(230, 70, 100, 20), "New Macro")) {
+		if(GUI.Button(new Rect(230, 70, 100, 20), "Macro")) {
 			MacroNode m = new MacroNode((int)scrollPos.x + 200, (int)scrollPos.y + 200);
 			settings.nodes.Add(m);
 			windows.Add(new NodeWindow(m));
+		}
+		if(GUI.Button(new Rect(380, 70, 100, 20), "Color Node")) {
+			ColorNode c = new ColorNode((int)scrollPos.x + 200, (int)scrollPos.y + 200);
+			settings.nodes.Add(c);
+			windows.Add(new NodeWindow(c));
+		}
+		if(GUI.Button(new Rect(490, 70, 100, 20), "Texture Output")) {
+			TextureNode t = new TextureNode((int)scrollPos.x + 200, (int)scrollPos.y + 200);
+			settings.nodes.Add(t);
+			windows.Add(new NodeWindow(t));
 		}
 		
 		scrollPos = GUI.BeginScrollView(new Rect(10, 95, this.position.width -10, this.position.height - 105), scrollPos, scrollRect);
@@ -159,6 +171,8 @@ public class ModuleEditorWindow: EditorWindow {
         BeginWindows();
 		
 		foreach(NodeWindow n in windows) {
+			GUI.color = Color.white;
+
 			// show the window
 			Rect rect = n.Show();
 			
@@ -206,6 +220,14 @@ public class ModuleEditorWindow: EditorWindow {
 						               rect.y + rect.height / 2 - 7,
 						               14, 
 						               14);
+
+				if(n.node.module != null) {
+					if(n.node.module.colorOutput)
+						GUI.color = Color.green;
+					else
+						GUI.color = Color.white;
+				}
+
 				if(!isConnecting) {
 					if(GUI.Button(output, "")) {
 						isConnecting = true;
@@ -260,4 +282,6 @@ public class ModuleEditorWindow: EditorWindow {
 							new Vector2(wr2.x - Mathf.Abs(wr2.x - (wr.x + wr.width)) / 2, wr2.y + wr2.height / 2),
 							color, null, 2f);
     }
+}
+
 }

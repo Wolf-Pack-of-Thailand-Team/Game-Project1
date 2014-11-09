@@ -1,9 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+namespace Planetary {
+
 [System.Serializable()]
 public class Node
 {
+	[System.NonSerialized] public ModuleBase module;
+
 	public string title;
 	public SerializableRect rect;
 	public int previewSize = 64;
@@ -11,6 +15,10 @@ public class Node
 	protected Node[] inputs;
 	private int lastInputCount = 0;
 	protected bool hasOutput = true;
+
+	public float minValue = -1f, maxValue = 1f;
+	public bool normalizeOutput = false;
+	public bool zeroToOneRange = false;
 
 	#region Properties
 	
@@ -66,5 +74,15 @@ public class Node
 		if(port < inputs.Length)
 			inputs[port] = null;
 	}
+
+	public void SetOutputOptions() {
+		if(module != null) {
+			module.minValue = minValue;
+			module.maxValue = maxValue;
+			module.normalizeOutput = normalizeOutput;
+			module.zeroToOneRange = zeroToOneRange;
+		}
+	}
 }
 
+}

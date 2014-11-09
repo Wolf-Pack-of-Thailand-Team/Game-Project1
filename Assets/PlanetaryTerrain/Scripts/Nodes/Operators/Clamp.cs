@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+namespace Planetary {
+
 public class Clamp : ModuleBase {
 	private ModuleBase module1;
 	public float min, max;
@@ -12,6 +14,8 @@ public class Clamp : ModuleBase {
 	}
 	
 	public override float GetValue(Vector3 position) {
-		return Mathf.Clamp(module1.GetValue(position), min, max);
+		return Output(Mathf.Clamp(module1.GetValue(position), min, max));
 	}
+}
+
 }
